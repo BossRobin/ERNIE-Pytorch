@@ -1,6 +1,6 @@
 # ERNIE-Pytorch
 
-This project is to convert [ERNIE](https://github.com/PaddlePaddle/ERNIE) to [pytorch-transformers's](https://github.com/huggingface/pytorch-transformers) format.
+This project is to convert [ERNIE](https://github.com/PaddlePaddle/ERNIE) to [huggingface's](https://github.com/huggingface/pytorch-transformers) format.
 
 ERNIE is based on the Bert model and has better performance on Chinese NLP tasks.
 
@@ -21,8 +21,8 @@ Directly download has converted ERNIE model:
 
 |model|description|
 |:---:|:---:|
-|[ERNIE 1.0 Base for Chinese](https://drive.google.com/open?id=1k7G41gaQvaqOhmQt-b5KSj27YcHjdSpV)|with params, config and vocabs|
-|[ERNIE 1.0 Base for Chinese(max-len-512)](https://drive.google.com/open?id=1il88pC5DabgypSYAF8pq_E2cuNrNuUAC)|with params, config and vocabs|
+|[ERNIE 1.0 Base for Chinese(pre-train step max-seq-len-128)](https://drive.google.com/open?id=1k7G41gaQvaqOhmQt-b5KSj27YcHjdSpV)|with params, config and vocabs|
+|[ERNIE 1.0 Base for Chinese(pre-train step max-seq-len-512)](https://drive.google.com/open?id=1il88pC5DabgypSYAF8pq_E2cuNrNuUAC)|with params, config and vocabs|
 
 ### Convert by yourself
 
@@ -80,32 +80,6 @@ finish save vocab
 ======================save model done!======================
 ```
 
-### Obtain the parameters for Mask-LM task
-
-Run `python convert_ernie_to_pytorch_v2.py` (which is modified from `convert_ernie_to_pytorch.py`), it will save the following parameters extra
-
-```yml
-{
-        'mask_lm_trans_fc.b_0': 'cls.predictions.transform.dense.bias',
-        'mask_lm_trans_fc.w_0': 'cls.predictions.transform.dense.weight',
-        'mask_lm_trans_layer_norm_scale': 'cls.predictions.transform.LayerNorm.weight',
-        'mask_lm_trans_layer_norm_bias': 'cls.predictions.transform.LayerNorm.bias',
-        'mask_lm_out_fc.b_0': 'cls.predictions.bias'
-}
-```
-
-You can use `BertForMaskedLM` from [pytorch-transformers](https://github.com/huggingface/pytorch-transformers) to test the converted model, an example is shown below, where bert-base is google's Chinese-BERT, bert-wwm and bert-wwm-ext are download from [Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm).
-```yml
-input: [MASK] [MASK] [MASK] 是中国神魔小说的经典之作，与《三国演义》《水浒传》《红楼梦》并称为中国古典四大名。
-output:
-{
-        "bert-base": "《 神 》",
-        "bert-wwm": "天 神 奇",
-        "bert-wwm-ext": "西 游 记",
-        "ernie": "西 游 记"
-}
-```
-
 
 ## Test
 
@@ -127,6 +101,31 @@ all_hidden_states, all_attentions = model(input_ids)[-2:]
 print('all_hidden_states shape', all_hidden_states.shape)
 print(all_hidden_states)
 """
+I1207 13:11:57.768735 4573365696 configuration_utils.py:148] loading configuration file ./ERNIE-converted/config.json
+I1207 13:11:57.769177 4573365696 configuration_utils.py:168] Model config {
+  "attention_probs_dropout_prob": 0.1,
+  "finetuning_task": null,
+  "hidden_act": "relu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-05,
+  "max_position_embeddings": 513,
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "num_labels": 2,
+  "output_attentions": false,
+  "output_hidden_states": false,
+  "output_past": true,
+  "pruned_heads": {},
+  "torchscript": false,
+  "type_vocab_size": 2,
+  "use_bfloat16": false,
+  "vocab_size": 18000
+}
+
+I1207 13:11:57.769847 4573365696 modeling_utils.py:334] loading weights file ./ERNIE-converted/pytorch_model.bin
 all_hidden_states shape torch.Size([1, 12, 768])
 tensor([[[-0.2229, -0.3131,  0.0088,  ...,  0.0199, -1.0507,  0.5315],
          [-0.8425, -0.0086,  0.2039,  ..., -0.1681,  0.0459, -1.1015],
@@ -136,7 +135,20 @@ tensor([[[-0.2229, -0.3131,  0.0088,  ...,  0.0199, -1.0507,  0.5315],
          [ 0.2940,  0.0286, -0.2381,  ...,  1.0630,  0.0387, -0.5267],
          [-0.1940,  0.1136,  0.0118,  ...,  0.9859,  0.4807, -1.5650]]],
        grad_fn=<NativeLayerNormBackward>)
+
 """
+```
+
+You can use `BertForMaskedLM` from [pytorch-transformers](https://github.com/huggingface/pytorch-transformers) to test the converted model, an example is shown below, where bert-base is google's Chinese-BERT, bert-wwm and bert-wwm-ext are download from [Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm).
+```yml
+input: [MASK] [MASK] [MASK] 是中国神魔小说的经典之作，与《三国演义》《水浒传》《红楼梦》并称为中国古典四大名。
+output:
+{
+        "bert-base": "《 神 》",
+        "bert-wwm": "天 神 奇",
+        "bert-wwm-ext": "西 游 记",
+        "ernie": "西 游 记"
+}
 ```
 
 ## Citation

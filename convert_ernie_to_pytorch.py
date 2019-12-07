@@ -11,34 +11,35 @@ import json
 
 if not os.path.exists('ERNIE'):
     os.system('git clone https://github.com/PaddlePaddle/ERNIE.git')
-sys.path = ['./ERNIE'] + sys.path
+sys.path = ['./ERNIE/ernie'] + sys.path
 try:
     from model.ernie_v1 import ErnieConfig,ErnieModel
 except:
     raise Exception('Place clone ERNIE first')
+
 
 def create_model(args, pyreader_name, ernie_config, is_prediction=False):
     pyreader = fluid.layers.py_reader(
         capacity=50,
         shapes=[[-1, args.max_seq_len, 1], [-1, args.max_seq_len, 1],
                 [-1, args.max_seq_len, 1], [-1, args.max_seq_len, 1], [-1, 1],
-                [-1, 1]],
-        dtypes=['int64', 'int64', 'int64', 'float32', 'int64', 'int64'],
-        lod_levels=[0, 0, 0, 0, 0, 0],
+                [-1, 1],
+                [3, 1], [3]],
+        dtypes=['int64', 'int64', 'int64', 'float32', 'int64', 'int64', 'int64', 'int64'],
+        lod_levels=[0, 0, 0, 0, 0, 0, 0, 0],
         name=pyreader_name,
         use_double_buffer=True)
-
-    (src_ids, sent_ids, pos_ids, input_mask, labels,
-     qids) = fluid.layers.read_file(pyreader)
-
+    
+    (src_ids, sent_ids, pos_ids, input_mask, labels, qids,
+     mlm_mask_label, mlm_mask_pos) = fluid.layers.read_file(pyreader)
     ernie = ErnieModel(
         src_ids=src_ids,
         position_ids=pos_ids,
         sentence_ids=sent_ids,
         input_mask=input_mask,
         config=ernie_config,
-        use_fp16=args.use_fp16)
-
+        use_fp16=args.use_fp16
+    )
     cls_feats = ernie.get_pooled_output()
     cls_feats = fluid.layers.dropout(
         x=cls_feats,
@@ -52,24 +53,30 @@ def create_model(args, pyreader_name, ernie_config, is_prediction=False):
             initializer=fluid.initializer.TruncatedNormal(scale=0.02)),
         bias_attr=fluid.ParamAttr(
             name="cls_out_b", initializer=fluid.initializer.Constant(0.)))
-
+    
+    ernie.get_pretraining_output(
+        mask_label=mlm_mask_label,
+        mask_pos=mlm_mask_pos,
+        labels=labels
+    )
+    
     if is_prediction:
         probs = fluid.layers.softmax(logits)
         feed_targets_name = [
             src_ids.name, pos_ids.name, sent_ids.name, input_mask.name
         ]
         return pyreader, probs, feed_targets_name
-
+    
     ce_loss, probs = fluid.layers.softmax_with_cross_entropy(
         logits=logits, label=labels, return_softmax=True)
     loss = fluid.layers.mean(x=ce_loss)
-
+    
     if args.use_fp16 and args.loss_scaling > 1.0:
         loss *= args.loss_scaling
-
+    
     num_seqs = fluid.layers.create_tensor(dtype='int64')
     accuracy = fluid.layers.accuracy(input=probs, label=labels, total=num_seqs)
-
+    
     graph_vars = {
         "loss": loss,
         "probs": probs,
@@ -78,10 +85,10 @@ def create_model(args, pyreader_name, ernie_config, is_prediction=False):
         "num_seqs": num_seqs,
         "qids": qids
     }
-
+    
     for k, v in graph_vars.items():
         v.persistable = True
-
+    
     return pyreader, graph_vars
 
 
@@ -128,6 +135,15 @@ def build_weight_map():
     for i in range(12):
         add_one_encoder_layer(i)
     add_w_and_b('pooled_fc', 'bert.pooler.dense')
+    
+    weight_map.update({
+        'mask_lm_trans_fc.b_0': 'cls.predictions.transform.dense.bias',
+        'mask_lm_trans_fc.w_0': 'cls.predictions.transform.dense.weight',
+        'mask_lm_trans_layer_norm_scale': 'cls.predictions.transform.LayerNorm.weight',
+        'mask_lm_trans_layer_norm_bias': 'cls.predictions.transform.LayerNorm.bias',
+        'mask_lm_out_fc.b_0': 'cls.predictions.bias',
+    })
+    
     return weight_map
 
 
@@ -147,7 +163,7 @@ def extract_weights(args):
     ernie_config.print_config()
     with fluid.program_guard(test_prog, startup_prog):
         with fluid.unique_name.guard():
-            _, _ = create_model(
+            create_model(
                 args,
                 pyreader_name='train',
                 ernie_config=ernie_config)
