@@ -140,8 +140,8 @@ tensor([[[-0.2229, -0.3131,  0.0088,  ...,  0.0199, -1.0507,  0.5315],
 ```
 
 You can use `BertForMaskedLM` from [pytorch-transformers](https://github.com/huggingface/pytorch-transformers) to test the converted model, an example is shown below, where bert-base is google's Chinese-BERT, bert-wwm and bert-wwm-ext are download from [Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm).
-```yml
-input: [MASK] [MASK] [MASK] 是中国神魔小说的经典之作，与《三国演义》《水浒传》《红楼梦》并称为中国古典四大名。
+```
+input: [MASK] [MASK] [MASK] 是中国神魔小说的经典之作，与《三国演义》《水浒传》《红楼梦》并称为中国古典四大名著。
 output:
 {
         "bert-base": "《 神 》",
