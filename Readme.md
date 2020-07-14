@@ -4,150 +4,178 @@ This project is to convert [ERNIE](https://github.com/PaddlePaddle/ERNIE) to [hu
 
 ERNIE is based on the Bert model and has better performance on Chinese NLP tasks.
 
-**Currently this project only supports the conversion of ERNIE 1.0 version.**
+**This project currently only supports the ERNIE 1.0 version.**
 
-## How to use
-You can use the version I have converted or convert it by yourself.
-
-requirements
-
-```txt
-paddlepaddle-gpu==1.4.0.post87
-```
+## How To Use
+You can directly download the version I have converted or convert by yourself.
 
 ### Directly Download
 
-Directly download has converted ERNIE model:
+|model|description|url|
+|:---:|:---:|:---:|
+|ernie-1.0|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/y7Uz|
+|ernie-tiny|Layer:3, Hdden:1024, Heads:16|http://pan.nghuyong.top/#/s/zYcp|
 
-|model|description|
-|:---:|:---:|
-|[ERNIE 1.0 Base for Chinese(pre-train step max-seq-len-128)](https://drive.google.com/open?id=1k7G41gaQvaqOhmQt-b5KSj27YcHjdSpV)|with params, config and vocabs|
-|[ERNIE 1.0 Base for Chinese(pre-train step max-seq-len-512)](https://drive.google.com/open?id=1il88pC5DabgypSYAF8pq_E2cuNrNuUAC)|with params, config and vocabs|
+### Convert by Yourself
 
-### Convert by yourself
+1. Download the paddle-paddle version ERNIE model from [here](https://github.com/PaddlePaddle/ERNIE#3-%E4%B8%8B%E8%BD%BD%E9%A2%84%E8%AE%AD%E7%BB%83%E6%A8%A1%E5%9E%8B%E5%8F%AF%E9%80%89), move to this project path and unzip the file.
 
-1. Download the paddle-paddle version ERNIE1.0 model from [here](https://github.com/PaddlePaddle/ERNIE#models), and move to this project path.
-
-2. check the `add_argument` in `convert_ernie_to_pytorch.py` and run `python convert_ernie_to_pytorch.py`, you can get the log:
-
+2. ```pip install -r requirements.txt```
+ 
+3. ```python convert.py```
 ```
-===================extract weights start====================
-word_embedding -> bert.embeddings.word_embeddings.weight (18000, 768)
-pos_embedding -> bert.embeddings.position_embeddings.weight (513, 768)
-sent_embedding -> bert.embeddings.token_type_embeddings.weight (2, 768)
-pre_encoder_layer_norm_scale -> bert.embeddings.LayerNorm.gamma (768,)
-pre_encoder_layer_norm_bias -> bert.embeddings.LayerNorm.beta (768,)
-encoder_layer_0_multi_head_att_query_fc.w_0 -> bert.encoder.layer.0.attention.self.query.weight (768, 768)
-encoder_layer_0_multi_head_att_query_fc.b_0 -> bert.encoder.layer.0.attention.self.query.bias (768,)
-encoder_layer_0_multi_head_att_key_fc.w_0 -> bert.encoder.layer.0.attention.self.key.weight (768, 768)
-encoder_layer_0_multi_head_att_key_fc.b_0 -> bert.encoder.layer.0.attention.self.key.bias (768,)
-encoder_layer_0_multi_head_att_value_fc.w_0 -> bert.encoder.layer.0.attention.self.value.weight (768, 768)
-encoder_layer_0_multi_head_att_value_fc.b_0 -> bert.encoder.layer.0.attention.self.value.bias (768,)
-encoder_layer_0_multi_head_att_output_fc.w_0 -> bert.encoder.layer.0.attention.output.dense.weight (768, 768)
-encoder_layer_0_multi_head_att_output_fc.b_0 -> bert.encoder.layer.0.attention.output.dense.bias (768,)
-encoder_layer_0_post_att_layer_norm_bias -> bert.encoder.layer.0.attention.output.LayerNorm.bias (768,)
-encoder_layer_0_post_att_layer_norm_scale -> bert.encoder.layer.0.attention.output.LayerNorm.weight (768,)
-encoder_layer_0_ffn_fc_0.w_0 -> bert.encoder.layer.0.intermediate.dense.weight (3072, 768)
-encoder_layer_0_ffn_fc_0.b_0 -> bert.encoder.layer.0.intermediate.dense.bias (3072,)
-encoder_layer_0_ffn_fc_1.w_0 -> bert.encoder.layer.0.output.dense.weight (768, 3072)
-encoder_layer_0_ffn_fc_1.b_0 -> bert.encoder.layer.0.output.dense.bias (768,)
-encoder_layer_0_post_ffn_layer_norm_bias -> bert.encoder.layer.0.output.LayerNorm.bias (768,)
-encoder_layer_0_post_ffn_layer_norm_scale -> bert.encoder.layer.0.output.LayerNorm.weight (768,)
-.......
-encoder_layer_11_multi_head_att_query_fc.w_0 -> bert.encoder.layer.11.attention.self.query.weight (768, 768)
-encoder_layer_11_multi_head_att_query_fc.b_0 -> bert.encoder.layer.11.attention.self.query.bias (768,)
-encoder_layer_11_multi_head_att_key_fc.w_0 -> bert.encoder.layer.11.attention.self.key.weight (768, 768)
-encoder_layer_11_multi_head_att_key_fc.b_0 -> bert.encoder.layer.11.attention.self.key.bias (768,)
-encoder_layer_11_multi_head_att_value_fc.w_0 -> bert.encoder.layer.11.attention.self.value.weight (768, 768)
-encoder_layer_11_multi_head_att_value_fc.b_0 -> bert.encoder.layer.11.attention.self.value.bias (768,)
-encoder_layer_11_multi_head_att_output_fc.w_0 -> bert.encoder.layer.11.attention.output.dense.weight (768, 768)
-encoder_layer_11_multi_head_att_output_fc.b_0 -> bert.encoder.layer.11.attention.output.dense.bias (768,)
-encoder_layer_11_post_att_layer_norm_bias -> bert.encoder.layer.11.attention.output.LayerNorm.bias (768,)
-encoder_layer_11_post_att_layer_norm_scale -> bert.encoder.layer.11.attention.output.LayerNorm.weight (768,)
-encoder_layer_11_ffn_fc_0.w_0 -> bert.encoder.layer.11.intermediate.dense.weight (3072, 768)
-encoder_layer_11_ffn_fc_0.b_0 -> bert.encoder.layer.11.intermediate.dense.bias (3072,)
-encoder_layer_11_ffn_fc_1.w_0 -> bert.encoder.layer.11.output.dense.weight (768, 3072)
-encoder_layer_11_ffn_fc_1.b_0 -> bert.encoder.layer.11.output.dense.bias (768,)
-encoder_layer_11_post_ffn_layer_norm_bias -> bert.encoder.layer.11.output.LayerNorm.bias (768,)
-encoder_layer_11_post_ffn_layer_norm_scale -> bert.encoder.layer.11.output.LayerNorm.weight (768,)
-pooled_fc.w_0 -> bert.pooler.dense.weight (768, 768)
-pooled_fc.b_0 -> bert.pooler.dense.bias (768,)
-====================extract weights done!===================
-======================save model start======================
-finish save model
-finish save config
-finish save vocab
-======================save model done!======================
+====================extract weights====================
+mlm_bias -> cls.predictions.bias (18000,)
+ln.weight -> bert.embeddings.LayerNorm.gamma (768,)
+ln.bias -> bert.embeddings.LayerNorm.beta (768,)
+word_emb.weight -> bert.embeddings.word_embeddings.weight (18000, 768)
+pos_emb.weight -> bert.embeddings.position_embeddings.weight (513, 768)
+sent_emb.weight -> bert.embeddings.token_type_embeddings.weight (2, 768)
+encoder_stack.block.0.attn.q.weight -> bert.encoder.layer.0.attention.self.query.weight (768, 768)
+encoder_stack.block.0.attn.q.bias -> bert.encoder.layer.0.attention.self.query.bias (768,)
+encoder_stack.block.0.attn.k.weight -> bert.encoder.layer.0.attention.self.key.weight (768, 768)
+encoder_stack.block.0.attn.k.bias -> bert.encoder.layer.0.attention.self.key.bias (768,)
+encoder_stack.block.0.attn.v.weight -> bert.encoder.layer.0.attention.self.value.weight (768, 768)
+encoder_stack.block.0.attn.v.bias -> bert.encoder.layer.0.attention.self.value.bias (768,)
+encoder_stack.block.0.attn.o.weight -> bert.encoder.layer.0.attention.output.dense.weight (768, 768)
+encoder_stack.block.0.attn.o.bias -> bert.encoder.layer.0.attention.output.dense.bias (768,)
+encoder_stack.block.0.ln1.weight -> bert.encoder.layer.0.attention.output.LayerNorm.gamma (768,)
+encoder_stack.block.0.ln1.bias -> bert.encoder.layer.0.attention.output.LayerNorm.beta (768,)
+encoder_stack.block.0.ffn.i.weight -> bert.encoder.layer.0.intermediate.dense.weight (3072, 768)
+encoder_stack.block.0.ffn.i.bias -> bert.encoder.layer.0.intermediate.dense.bias (3072,)
+encoder_stack.block.0.ffn.o.weight -> bert.encoder.layer.0.output.dense.weight (768, 3072)
+encoder_stack.block.0.ffn.o.bias -> bert.encoder.layer.0.output.dense.bias (768,)
+encoder_stack.block.0.ln2.weight -> bert.encoder.layer.0.output.LayerNorm.gamma (768,)
+encoder_stack.block.0.ln2.bias -> bert.encoder.layer.0.output.LayerNorm.beta (768,)
+...
+encoder_stack.block.11.ffn.o.bias -> bert.encoder.layer.11.output.dense.bias (768,)
+encoder_stack.block.11.ln2.weight -> bert.encoder.layer.11.output.LayerNorm.gamma (768,)
+encoder_stack.block.11.ln2.bias -> bert.encoder.layer.11.output.LayerNorm.beta (768,)
+pooler.weight -> bert.pooler.dense.weight (768, 768)
+pooler.bias -> bert.pooler.dense.bias (768,)
+mlm.weight -> cls.predictions.transform.dense.weight (768, 768)
+mlm.bias -> cls.predictions.transform.dense.bias (768,)
+mlm_ln.weight -> cls.predictions.transform.LayerNorm.gamma (768,)
+mlm_ln.bias -> cls.predictions.transform.LayerNorm.beta (768,)
+====================save config file====================
+====================save vocab file====================
 ```
 
+Now, a folder named `convert` will be in the project path, and 
+there will be three files in this folder: `config.json`,`pytorch_model.bin` and `vocab.txt`.
 
-## Test
 
+## Check the Convert Result
+
+[PaddlePaddle's Official Quick Start](https://github.com/PaddlePaddle/ERNIE#%E5%BF%AB%E9%80%9F%E4%B8%8A%E6%89%8B)
 ```Python
 #!/usr/bin/env python
 # encoding: utf-8
+import numpy as np
+import paddle.fluid.dygraph as D
+from ernie.tokenizing_ernie import ErnieTokenizer
+from ernie.modeling_ernie import ErnieModel
+
+D.guard().__enter__() # activate paddle `dygrpah` mode
+
+model = ErnieModel.from_pretrained('ernie-1.0')    # Try to get pretrained model from server, make sure you have network connection
+model.eval()
+tokenizer = ErnieTokenizer.from_pretrained('ernie-1.0')
+
+ids, _ = tokenizer.encode('hello world')
+ids = D.to_variable(np.expand_dims(ids, 0))  # insert extra `batch` dimension
+pooled, encoded = model(ids)                 # eager execution
+print(pooled.numpy())                        # convert  results to numpy
+
+"""
+output:
+[[-1.         -1.          0.99479663 -0.99986964 -0.7872066  -1.
+  -0.99919444  0.985997   -0.22648102  0.97202295 -0.9994965  -0.982234
+  -0.6821966  -0.9998574  -0.83046496 -0.9804977  -1.          0.9999509
+  -0.55144966  0.48973152 -1.          1.          0.14248642 -0.71969527
+   ...
+   0.93848914  0.8418771   1.          0.99999803  0.9800671   0.99886674
+   0.9999988   0.99946415  0.9849099   0.9996924  -0.79442227 -0.9999412
+   0.99827075  1.         -0.05767363  0.99999857  0.8176171   0.7983498
+  -0.14292054  1.         -0.99759513 -0.9999982  -0.99973375 -0.9993742 ]]
+"""
+```
+
+Use huggingface's Transformer with our converted ERNIE model
+````Python
 import torch
-from pytorch_transformers import BertTokenizer, BertModel
+from transformers import BertTokenizer, BertModel
 
-# Load pre-trained model tokenizer (vocabulary)
-tokenizer = BertTokenizer.from_pretrained('./ERNIE-converted')
-
-input_ids = torch.tensor([tokenizer.encode("这是百度的ERNIE1.0模型")])
-
-model = BertModel.from_pretrained('./ERNIE-converted')
-
-all_hidden_states, all_attentions = model(input_ids)[-2:]
-
-print('all_hidden_states shape', all_hidden_states.shape)
-print(all_hidden_states)
-"""
-I1207 13:11:57.768735 4573365696 configuration_utils.py:148] loading configuration file ./ERNIE-converted/config.json
-I1207 13:11:57.769177 4573365696 configuration_utils.py:168] Model config {
-  "attention_probs_dropout_prob": 0.1,
-  "finetuning_task": null,
-  "hidden_act": "relu",
-  "hidden_dropout_prob": 0.1,
-  "hidden_size": 768,
-  "initializer_range": 0.02,
-  "intermediate_size": 3072,
-  "layer_norm_eps": 1e-05,
-  "max_position_embeddings": 513,
-  "num_attention_heads": 12,
-  "num_hidden_layers": 12,
-  "num_labels": 2,
-  "output_attentions": false,
-  "output_hidden_states": false,
-  "output_past": true,
-  "pruned_heads": {},
-  "torchscript": false,
-  "type_vocab_size": 2,
-  "use_bfloat16": false,
-  "vocab_size": 18000
-}
-
-I1207 13:11:57.769847 4573365696 modeling_utils.py:334] loading weights file ./ERNIE-converted/pytorch_model.bin
-all_hidden_states shape torch.Size([1, 12, 768])
-tensor([[[-0.2229, -0.3131,  0.0088,  ...,  0.0199, -1.0507,  0.5315],
-         [-0.8425, -0.0086,  0.2039,  ..., -0.1681,  0.0459, -1.1015],
-         [ 0.7147,  0.1788,  0.7055,  ...,  0.4651,  0.8798, -0.5982],
-         ...,
-         [-0.9507, -0.3732, -0.9508,  ...,  0.4992, -0.0545,  1.2238],
-         [ 0.2940,  0.0286, -0.2381,  ...,  1.0630,  0.0387, -0.5267],
-         [-0.1940,  0.1136,  0.0118,  ...,  0.9859,  0.4807, -1.5650]]],
-       grad_fn=<NativeLayerNormBackward>)
+tokenizer = BertTokenizer.from_pretrained('./convert')
+model = BertModel.from_pretrained('./convert')
+input_ids = torch.tensor([tokenizer.encode("hello world", add_special_tokens=True)])
+with torch.no_grad():
+    sequence_output, pooled_output = model(input_ids)
+print(pooled_output.cpu().numpy())
 
 """
+output:
+[[-1.         -1.          0.99479663 -0.99986964 -0.78720796 -1.
+  -0.9991946   0.98599714 -0.22648017  0.972023   -0.9994966  -0.9822342
+  -0.682196   -0.9998575  -0.83046496 -0.9804982  -1.          0.99995095
+  -0.551451    0.48973027 -1.          1.          0.14248991 -0.71969616
+   ...
+   0.9384899   0.84187615  1.          0.999998    0.9800671   0.99886674
+   0.9999988   0.99946433  0.98491037  0.9996923  -0.7944245  -0.99994105
+   0.9982707   1.         -0.05766615  0.9999987   0.81761867  0.7983511
+  -0.14292456  1.         -0.9975951  -0.9999982  -0.9997338  -0.99937415]]
+"""
+````
+
+**It can be seen that the encoder result of our convert version is the same with the official paddlepaddle's version.**
+
+# Reproduce ERNIE Paper's Case
+
+We use `BertForMaskedLM` from [transformers](https://github.com/huggingface/transformers) to reproduce the Cloze Test in 
+[ERNIE's paper](https://arxiv.org/pdf/1904.09223.pdf) (section 4.6).
+
+We also compare ERNIE's result with google's Chinese-BERT, bert-wwm and bert-wwm-ext from [Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm).
+
+Code
+```Python
+#!/usr/bin/env python
+#encoding: utf-8
+import torch
+from transformers import BertTokenizer, BertForMaskedLM
+
+tokenizer = BertTokenizer.from_pretrained('./convert')
+
+input_tx = "[CLS] [MASK] [MASK] [MASK] 是中国神魔小说的经典之作，与《三国演义》《水浒传》《红楼梦》并称为中国古典四大名著。[SEP]"
+tokenized_text = tokenizer.tokenize(input_tx)
+indexed_tokens = tokenizer.convert_tokens_to_ids(tokenized_text)
+
+tokens_tensor = torch.tensor([indexed_tokens])
+segments_tensors = torch.tensor([[0] * len(tokenized_text)])
+
+model = BertForMaskedLM.from_pretrained('./convert')
+model.eval()
+
+with torch.no_grad():
+    outputs = model(tokens_tensor, token_type_ids=segments_tensors)
+    predictions = outputs[0]
+
+predicted_index = [torch.argmax(predictions[0, i]).item() for i in range(0, (len(tokenized_text) - 1))]
+predicted_token = [tokenizer.convert_ids_to_tokens([predicted_index[x]])[0] for x in
+                   range(1, (len(tokenized_text) - 1))]
+
+print('Predicted token is:', predicted_token)
 ```
 
-You can use `BertForMaskedLM` from [pytorch-transformers](https://github.com/huggingface/pytorch-transformers) to test the converted model, an example is shown below, where bert-base is google's Chinese-BERT, bert-wwm and bert-wwm-ext are download from [Chinese-BERT-wwm](https://github.com/ymcui/Chinese-BERT-wwm).
-```
-input: [MASK] [MASK] [MASK] 是中国神魔小说的经典之作，与《三国演义》《水浒传》《红楼梦》并称为中国古典四大名著。
+Result
+```Latext
+input:
+[CLS] [MASK] [MASK] [MASK] 是中国神魔小说的经典之作，与《三国演义》《水浒传》《红楼梦》并称为中国古典四大名著。[SEP]
 output:
 {
-        "bert-base": "《 神 》",
-        "bert-wwm": "天 神 奇",
-        "bert-wwm-ext": "西 游 记",
-        "ernie": "西 游 记"
+    "bert-base": "《 神 》",
+    "bert-wwm": "天 神 奇",
+    "bert-wwm-ext": "西 游 记",
+    "ernie-1.0": "西 游 记"
 }
 ```
 
@@ -163,14 +191,6 @@ If you use this work in a scientific publication, I would appreciate references 
   year={2019}
 }
 ```
-
-## Reference
-
-1. https://arxiv.org/abs/1904.09223
-2. https://github.com/PaddlePaddle/LARK/issues/37#issuecomment-474203851
-
-
-
 
 
 
