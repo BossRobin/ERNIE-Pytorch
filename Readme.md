@@ -7,16 +7,23 @@ ERNIE is based on the Bert model and has better performance on Chinese NLP tasks
 **Update: We have supported ernie2.0 (base & large) and ernie-tiny**
 
 ## How To Use
-You can directly download the version I have converted or convert by yourself.
+You can directly download the model I have converted **or** directly load by huggingface's transformers  **or**  convert by yourself.
 
-### Directly Download
+### Directly Download or Directly Load
 
-|model|description|url|
-|:---:|:---:|:---:|
-|ernie-1.0 (Chinese)|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/y7Uz|
-|ernie-2.0-en (English)|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/BXh9|
-|ernie-2.0-large-en (English)|Layer:24, Hidden:1024, Heads16|http://pan.nghuyong.top/#/s/DxiK|
-|ernie-tiny (English)|Layer:3, Hdden:1024, Heads:16|http://pan.nghuyong.top/#/s/AOf3|
+|model|identifier in transformers|description|download url|
+|:---:|:---:|:---:|:---:|
+|ernie-1.0 (Chinese)|nghuyong/ernie-1.0|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/y7Uz|
+|ernie-2.0-en (English)|nghuyong/ernie-2.0-en|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/BXh9|
+|ernie-2.0-large-en (English)|nghuyong/ernie-2.0-large-en|Layer:24, Hidden:1024, Heads16|http://pan.nghuyong.top/#/s/DxiK|
+|ernie-tiny (English)|nghuyong/ernie-tiny|Layer:3, Hdden:1024, Heads:16|http://pan.nghuyong.top/#/s/AOf3|
+
+Directly Load by huggingface's transformers, take `ernie-1.0` as an example:
+```Python
+from transformers import AutoTokenizer, AutoModel
+tokenizer = AutoTokenizer.from_pretrained("nghuyong/ernie-1.0")
+model = AutoModel.from_pretrained("nghuyong/ernie-1.0")
+```
 
 ### Convert by Yourself
 
