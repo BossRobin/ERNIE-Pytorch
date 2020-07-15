@@ -4,7 +4,7 @@ This project is to convert [ERNIE](https://github.com/PaddlePaddle/ERNIE) to [hu
 
 ERNIE is based on the Bert model and has better performance on Chinese NLP tasks.
 
-**This project currently only supports the ERNIE 1.0 version.**
+**Update: We have supported ernie2.0 and ernie-tiny**
 
 ## How To Use
 You can directly download the version I have converted or convert by yourself.
@@ -14,6 +14,8 @@ You can directly download the version I have converted or convert by yourself.
 |model|description|url|
 |:---:|:---:|:---:|
 |ernie-1.0 (Chinese)|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/y7Uz|
+|ernie-2.0-en (English)|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/BXh9|
+|ernie-tiny (English)|Layer:3, Hdden:1024, Heads:16|http://pan.nghuyong.top/#/s/AOf3|
 
 ### Convert by Yourself
 
@@ -126,6 +128,8 @@ output:
 ````
 
 **It can be seen that the encoder result of our convert version is the same with the official paddlepaddle's version.**
+
+**Here, we just take `ernie1.0` as an example, `ernie-tiny` and `ernie-2.0-en`will get the same result.**
 
 ## Reproduce ERNIE Paper's Case
 
