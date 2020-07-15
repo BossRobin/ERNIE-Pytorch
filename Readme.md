@@ -4,7 +4,7 @@ This project is to convert [ERNIE](https://github.com/PaddlePaddle/ERNIE) to [hu
 
 ERNIE is based on the Bert model and has better performance on Chinese NLP tasks.
 
-**Update: We have supported ernie2.0 and ernie-tiny**
+**Update: We have supported ernie2.0 (base & large) and ernie-tiny**
 
 ## How To Use
 You can directly download the version I have converted or convert by yourself.
@@ -15,6 +15,7 @@ You can directly download the version I have converted or convert by yourself.
 |:---:|:---:|:---:|
 |ernie-1.0 (Chinese)|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/y7Uz|
 |ernie-2.0-en (English)|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/BXh9|
+|ernie-2.0-large-en (English)|Layer:24, Hidden:1024, Heads16|http://pan.nghuyong.top/#/s/DxiK|
 |ernie-tiny (English)|Layer:3, Hdden:1024, Heads:16|http://pan.nghuyong.top/#/s/AOf3|
 
 ### Convert by Yourself
@@ -25,6 +26,8 @@ You can directly download the version I have converted or convert by yourself.
  
 3. ```python convert.py```
 ```
+====================save config file====================
+====================save vocab file====================
 ====================extract weights====================
 mlm_bias -> cls.predictions.bias (18000,)
 ln.weight -> bert.embeddings.LayerNorm.gamma (768,)
@@ -58,8 +61,6 @@ mlm.weight -> cls.predictions.transform.dense.weight (768, 768)
 mlm.bias -> cls.predictions.transform.dense.bias (768,)
 mlm_ln.weight -> cls.predictions.transform.LayerNorm.gamma (768,)
 mlm_ln.bias -> cls.predictions.transform.LayerNorm.beta (768,)
-====================save config file====================
-====================save vocab file====================
 ```
 
 Now, a folder named `convert` will be in the project path, and 
@@ -129,7 +130,7 @@ output:
 
 **It can be seen that the encoder result of our convert version is the same with the official paddlepaddle's version.**
 
-**Here, we just take `ernie1.0` as an example, `ernie-tiny` and `ernie-2.0-en`will get the same result.**
+**Here, we just take `ernie1.0` as an example, `ernie-tiny`, `ernie-2.0-en` and `ernie-2.0-large-en` will get the same result.**
 
 ## Reproduce ERNIE Paper's Case
 
