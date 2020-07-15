@@ -13,8 +13,7 @@ You can directly download the version I have converted or convert by yourself.
 
 |model|description|url|
 |:---:|:---:|:---:|
-|ernie-1.0|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/y7Uz|
-|ernie-tiny|Layer:3, Hdden:1024, Heads:16|http://pan.nghuyong.top/#/s/zYcp|
+|ernie-1.0 (Chinese)|Layer:12, Hidden:768, Heads:12|http://pan.nghuyong.top/#/s/y7Uz|
 
 ### Convert by Yourself
 
@@ -63,7 +62,6 @@ mlm_ln.bias -> cls.predictions.transform.LayerNorm.beta (768,)
 
 Now, a folder named `convert` will be in the project path, and 
 there will be three files in this folder: `config.json`,`pytorch_model.bin` and `vocab.txt`.
-
 
 ## Check the Convert Result
 
@@ -129,7 +127,7 @@ output:
 
 **It can be seen that the encoder result of our convert version is the same with the official paddlepaddle's version.**
 
-# Reproduce ERNIE Paper's Case
+## Reproduce ERNIE Paper's Case
 
 We use `BertForMaskedLM` from [transformers](https://github.com/huggingface/transformers) to reproduce the Cloze Test in 
 [ERNIE's paper](https://arxiv.org/pdf/1904.09223.pdf) (section 4.6).
@@ -178,6 +176,81 @@ output:
     "ernie-1.0": "西 游 记"
 }
 ```
+
+## I Want Tensorflow's Version
+
+We can simply use huggingface's [convert_pytorch_checkpoint_to_tf](https://github.com/huggingface/transformers/blob/master/src/transformers/convert_bert_pytorch_checkpoint_to_original_tf.py) tool to
+convert huggingface's pytorch model to tensorflow's version.
+
+```Python
+from transformers import BertModel
+from transformers.convert_bert_pytorch_checkpoint_to_original_tf import convert_pytorch_checkpoint_to_tf
+
+model = BertModel.from_pretrained('./convert')
+convert_pytorch_checkpoint_to_tf(model=model, ckpt_dir='./tf_convert', model_name='ernie')
+```
+
+Output
+```bash
+I0715 09:15:37.493660 4524387776 configuration_utils.py:262] loading configuration file ./convert/config.json
+I0715 09:15:37.494213 4524387776 configuration_utils.py:300] Model config BertConfig {
+  "attention_probs_dropout_prob": 0.1,
+  "gradient_checkpointing": false,
+  "hidden_act": "relu",
+  "hidden_dropout_prob": 0.1,
+  "hidden_size": 768,
+  "initializer_range": 0.02,
+  "intermediate_size": 3072,
+  "layer_norm_eps": 1e-05,
+  "max_position_embeddings": 513,
+  "model_type": "bert",
+  "num_attention_heads": 12,
+  "num_hidden_layers": 12,
+  "pad_token_id": 0,
+  "type_vocab_size": 2,
+  "vocab_size": 18000
+}
+
+I0715 09:15:37.495160 4524387776 modeling_utils.py:665] loading weights file ./convert/pytorch_model.bin
+I0715 09:15:39.599742 4524387776 modeling_utils.py:765] All model checkpoint weights were used when initializing BertModel.
+
+I0715 09:15:39.599884 4524387776 modeling_utils.py:774] All the weights of BertModel were initialized from the model checkpoint at ./convert.
+If your task is similar to the task the model of the ckeckpoint was trained on, you can already use BertModel for predictions without further training.
+2020-07-15 09:15:39.613287: I tensorflow/core/platform/cpu_feature_guard.cc:141] Your CPU supports instructions that this TensorFlow binary was not compiled to use: AVX2 FMA
+Successfully created bert/embeddings/word_embeddings: True
+Successfully created bert/embeddings/position_embeddings: True
+Successfully created bert/embeddings/token_type_embeddings: True
+Successfully created bert/embeddings/LayerNorm/gamma: True
+Successfully created bert/embeddings/LayerNorm/beta: True
+Successfully created bert/encoder/layer_0/attention/self/query/kernel: True
+Successfully created bert/encoder/layer_0/attention/self/query/bias: True
+Successfully created bert/encoder/layer_0/attention/self/key/kernel: True
+Successfully created bert/encoder/layer_0/attention/self/key/bias: True
+Successfully created bert/encoder/layer_0/attention/self/value/kernel: True
+Successfully created bert/encoder/layer_0/attention/self/value/bias: True
+Successfully created bert/encoder/layer_0/attention/output/dense/kernel: True
+Successfully created bert/encoder/layer_0/attention/output/dense/bias: True
+Successfully created bert/encoder/layer_0/attention/output/LayerNorm/gamma: True
+Successfully created bert/encoder/layer_0/attention/output/LayerNorm/beta: True
+...
+Successfully created bert/encoder/layer_11/intermediate/dense/bias: True
+Successfully created bert/encoder/layer_11/output/dense/kernel: True
+Successfully created bert/encoder/layer_11/output/dense/bias: True
+Successfully created bert/encoder/layer_11/output/LayerNorm/gamma: True
+Successfully created bert/encoder/layer_11/output/LayerNorm/beta: True
+Successfully created bert/pooler/dense/kernel: True
+Successfully created bert/pooler/dense/bias: True
+```
+
+The above code will generate a `tf_convert` directory with tensorflow's checkpoint.
+```bash
+└── tf_convert
+    ├── checkpoint
+    ├── ernie.ckpt.data-00000-of-00001
+    ├── ernie.ckpt.index
+    └── ernie.ckpt.meta
+```
+The `config.json` and `vocab.txt` of tensorflow version is the same with huggingface's pytorch version in `convert` directory.
 
 ## Citation
 
